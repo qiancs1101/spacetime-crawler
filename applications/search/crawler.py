@@ -35,7 +35,7 @@ class Simulation(object):
         frame_c = ClientFrame(
             objectless_connector,
             dataframe_client(),
-            time_step=2000)
+            time_step=0)
 
         frame_c.attach_app(CrawlerFrame(frame_c))
 
