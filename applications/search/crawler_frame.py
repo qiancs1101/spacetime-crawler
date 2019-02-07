@@ -102,6 +102,7 @@ def extract_next_links(rawDataObj):
     except:
         return outputLinks  # if web page cannot be parsed, return []
     outputLinks = parsedPage.xpath(".//a/@href")   # extract all href
+    outputLinks = [l[:-1] if l[-1] == "/" else l for l in outputLinks]   # remove / in the end of url in order to standardize the url (same in server_datamodel.Link)
     return outputLinks
 
 def is_valid(url, frontier):
