@@ -76,8 +76,9 @@ class CrawlerFrame(IApplication):
                     crawler_status[link.full_url]['children'].append(l)
                 else:
                     crawler_status[link.full_url]['invalid'].append(l)
-            with open("./record.json","w") as f:
-                json.dump(crawler_status, f)
+                if len(self.frame.get(ChongshqLink))%500 == 0:
+                    with open("./record.json","w") as f:
+                        json.dump(crawler_status, f)
 
     def shutdown(self):
         print (
