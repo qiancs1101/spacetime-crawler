@@ -17,6 +17,10 @@ LOG_HEADER = "[CRAWLER]"
 
 def load_data():
     return {}
+    # if not os.path.exists('./record.json'):
+    #     return {}
+    # with open('./record.json',"r") as f:
+    #     return json.load(f)
 crawler_status = load_data()
 
 @Producer(ChongshqLink)
@@ -76,9 +80,8 @@ class CrawlerFrame(IApplication):
                     crawler_status[link.full_url]['children'].append(l)
                 else:
                     crawler_status[link.full_url]['invalid'].append(l)
-                if len(self.frame.get(ChongshqLink))%500 == 0:
-                    with open("./record.json","w") as f:
-                        json.dump(crawler_status, f)
+                with open("./record.json","w") as f:
+                    json.dump(crawler_status, f)
 
     def shutdown(self):
         print (
@@ -97,6 +100,8 @@ def extract_next_links(rawDataObj):
     
     Suggested library: lxml
     '''
+    if rawDataObj.http_code != 200:  # return when page not downloaded successfully
+        return outputLinks
     try:
         parsedPage = html.fromstring(rawDataObj.content)  # parse DOM tree
         parsedPage.make_links_absolute(rawDataObj.url)   # make some relative links to be absolute
@@ -118,6 +123,8 @@ def is_valid(url, frontier):
     except:
         return False
     if parsed.scheme not in set(["http", "https"]):  # should contains protocol
+        return False
+    if parsed.query != None and parsed.query != '':  # avoid dynamic link
         return False
     for link in frontier:   # ignore all the links that has been added to the frontier
         if url == link.full_url:
