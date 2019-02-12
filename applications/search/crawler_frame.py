@@ -64,8 +64,10 @@ class CrawlerFrame(IApplication):
             else:
                 crawler_status[link.full_url]['visited'] = True
                 crawler_status[crawler_status[link.full_url]['parent']]['processed'] += 1
-            
-            downloaded = link.download()
+            try:
+                downloaded = link.download()
+            except:
+                continue
             links = extract_next_links(downloaded)
             for l in links:
                 if is_valid(l, self.frame.get(ChongshqLink)):
@@ -80,6 +82,7 @@ class CrawlerFrame(IApplication):
                     crawler_status[link.full_url]['children'].append(l)
                 else:
                     crawler_status[link.full_url]['invalid'].append(l)
+                # if len(self.frame.get(ChongshqLink))%300 == 0:
                 with open("./record.json","w") as f:
                     json.dump(crawler_status, f)
 
@@ -108,6 +111,10 @@ def extract_next_links(rawDataObj):
     except:
         return outputLinks  # if web page cannot be parsed, return []
     outputLinks = parsedPage.xpath(".//a/@href")   # extract all href
+    for i in range(len(outputLinks)): # remove anchor in same url
+        if '#' in outputLinks[i]:
+            outputLinks[i] = outputLinks[i][:outputLinks[i].index('#')]
+
     outputLinks = [l[:-1] if l[-1] == "/" else l for l in outputLinks]   # remove / in the end of url in order to standardize the url (same in server_datamodel.Link)
     return outputLinks
 
@@ -125,6 +132,8 @@ def is_valid(url, frontier):
     if parsed.scheme not in set(["http", "https"]):  # should contains protocol
         return False
     if parsed.query != None and parsed.query != '':  # avoid dynamic link
+        return False
+    if 'calendar' in url: # avoid calender in case of crawler trap
         return False
     for link in frontier:   # ignore all the links that has been added to the frontier
         if url == link.full_url:

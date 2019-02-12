@@ -1,2 +1,2 @@
 Most outlink url(including invald):http://www.ics.uci.edu/about/search/search_graduate_all.php; have 920 outlinks.
-Most outlink url(only valid):http://www.ics.uci.edu/~dechter/publications.html; have 258 outlinks.
+Most outlink url(only valid):http://www.ics.uci.edu/~dechter/publications.html; have 257 outlinks.
